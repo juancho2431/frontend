@@ -1,0 +1,62 @@
+.table-container {
+    margin: 20px 0;
+    border: 1px solid #ddd;
+    padding: 20px;
+    border-radius: 8px;
+    background-color: #f9f9f9;
+  }
+  
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 20px 0;
+  }
+  
+  th, td {
+    padding: 12px 15px;
+    text-align: left;
+    border-bottom: 1px solid #ddd;
+  }
+  
+  th {
+    background-color: #4CAF50;
+    color: white;
+  }
+  
+  .editar-button {
+    padding: 6px 12px;
+    margin: 5px;
+    background-color: #dd7310;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+  }
+  
+  .editar-button:hover {
+    background-color: #a5550a;
+  }
+  
+  .borrar-button {
+    padding: 6px 12px;
+    margin: 5px;
+    background-color: #dd1010;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+  }
+  
+  .borrar-button:hover {
+    background-color: #770303;
+  }
+  .add-button {
+    margin-bottom: 20px;
+    background-color: #4CAF50;
+    color: white;
+  }
+  
+  .add-button:hover {
+    background-color: #45a049;
+  }
+  

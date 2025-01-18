@@ -1,0 +1,23 @@
+{
+  "files": {
+    "main.css": "/static/css/main.64e1b1df.css",
+    "main.js": "/static/js/main.eac1caae.js",
+    "static/js/239.fcaddd2b.chunk.js": "/static/js/239.fcaddd2b.chunk.js",
+    "static/js/213.627943c0.chunk.js": "/static/js/213.627943c0.chunk.js",
+    "static/js/732.be0d18e9.chunk.js": "/static/js/732.be0d18e9.chunk.js",
+    "static/js/453.8ab44547.chunk.js": "/static/js/453.8ab44547.chunk.js",
+    "static/media/LOGO_AREPASAURIOS.png": "/static/media/LOGO_AREPASAURIOS.54fae2ec6b9337637ddf.png",
+    "static/media/LOGO_AREPASAURIOS-bn.png": "/static/media/LOGO_AREPASAURIOS-bn.181fe37e3d8eea017b99.png",
+    "index.html": "/index.html",
+    "main.64e1b1df.css.map": "/static/css/main.64e1b1df.css.map",
+    "main.eac1caae.js.map": "/static/js/main.eac1caae.js.map",
+    "239.fcaddd2b.chunk.js.map": "/static/js/239.fcaddd2b.chunk.js.map",
+    "213.627943c0.chunk.js.map": "/static/js/213.627943c0.chunk.js.map",
+    "732.be0d18e9.chunk.js.map": "/static/js/732.be0d18e9.chunk.js.map",
+    "453.8ab44547.chunk.js.map": "/static/js/453.8ab44547.chunk.js.map"
+  },
+  "entrypoints": [
+    "static/css/main.64e1b1df.css",
+    "static/js/main.eac1caae.js"
+  ]
+}

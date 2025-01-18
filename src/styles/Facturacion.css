@@ -1,0 +1,124 @@
+body {
+  font-family: Arial, sans-serif;
+  background-color: #f5f5f5;
+  margin: 0;
+  padding: 0;
+}
+
+h1, h2 {
+  color: #333;
+}
+
+h1 {
+  text-align: center;
+  margin-top: 20px;
+}
+
+h2 {
+  margin-top: 15px;
+  color: #4CAF50;
+}
+
+.productos {
+  display: flex;
+  justify-content: space-around;
+  margin: 20px;
+}
+
+.arepas, .bebidas {
+  background-color: #ffffff;
+  padding: 15px;
+  border-radius: 5px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  width: 45%;
+}
+
+.arepas button, .bebidas button {
+  background-color: #4CAF50;
+  color: white;
+  border: none;
+  padding: 5px 10px;
+  margin-top: 10px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.arepas button:hover, .bebidas button:hover {
+  background-color: #45a049;
+}
+
+.carrito {
+  background-color: #ffffff;
+  margin: 20px;
+  padding: 20px;
+  border-radius: 5px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+.carrito ul {
+  list-style-type: none;
+  padding: 0;
+}
+
+.carrito li {
+  margin: 10px 0;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.carrito button {
+  background-color: #f44336;
+  color: white;
+  border: none;
+  padding: 5px 10px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.carrito button:hover {
+  background-color: #e53935;
+}
+
+.carrito p {
+  font-weight: bold;
+}
+
+button[disabled] {
+  background-color: #ccc;
+  cursor: not-allowed;
+}
+
+.ventas {
+  margin: 20px;
+  padding: 20px;
+  background-color: #ffffff;
+  border-radius: 5px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+.ventas table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 10px;
+}
+
+.ventas table, th, td {
+  border: 1px solid #ddd;
+}
+
+.ventas th, .ventas td {
+  padding: 10px;
+  text-align: center;
+}
+
+.ventas th {
+  background-color: #4CAF50;
+  color: white;
+}
+
+.error {
+  color: #f44336;
+  text-align: center;
+  margin-bottom: 15px;
+}
