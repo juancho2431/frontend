@@ -1,87 +1,91 @@
+/* Fuente principal (puedes importar desde Google Fonts si lo deseas) */
 body {
-  font-family: Arial, sans-serif;
-  background-color: #f5f5f5;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background: linear-gradient(to right, #ece9e6, #ffffff);
   margin: 0;
   padding: 0;
+  color: #333;
 }
 
+/* Encabezados */
 h1, h2 {
-  color: #333;
+  color: #2c3e50;
+  margin-bottom: 10px;
 }
 
 h1 {
   text-align: center;
   margin-top: 20px;
+  font-size: 2.5em;
 }
 
 h2 {
-  margin-top: 15px;
+  font-size: 1.8em;
+  border-bottom: 2px solid #4CAF50;
+  padding-bottom: 5px;
+  margin-bottom: 20px;
+}
+
+/* Contenedor principal */
+.facturacion-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+/* Sección de productos y bebidas */
+.productos-bebidas {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-around;
+  margin: 20px 0;
+}
+
+.productos-list, .bebidas-list {
+  background-color: #fff;
+  padding: 20px;
+  margin: 10px;
+  border-radius: 8px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  flex: 1 1 45%;
+}
+
+.productos-list h2,
+.bebidas-list h2 {
+  margin-top: 0;
   color: #4CAF50;
 }
 
-.productos {
-  display: flex;
-  justify-content: space-around;
-  margin: 20px;
-}
-
-.arepas, .bebidas {
-  background-color: #ffffff;
-  padding: 15px;
-  border-radius: 5px;
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-  width: 45%;
-}
-
-.arepas button, .bebidas button {
-  background-color: #4CAF50;
-  color: white;
-  border: none;
-  padding: 5px 10px;
-  margin-top: 10px;
-  cursor: pointer;
-  transition: background-color 0.3s;
-}
-
-.arepas button:hover, .bebidas button:hover {
-  background-color: #45a049;
-}
-
-.carrito {
-  background-color: #ffffff;
-  margin: 20px;
-  padding: 20px;
-  border-radius: 5px;
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-}
-
-.carrito ul {
-  list-style-type: none;
-  padding: 0;
-}
-
-.carrito li {
-  margin: 10px 0;
+.item {
   display: flex;
   justify-content: space-between;
   align-items: center;
+  padding: 8px 0;
+  border-bottom: 1px solid #f0f0f0;
 }
 
-.carrito button {
-  background-color: #f44336;
-  color: white;
+.item:last-child {
+  border-bottom: none;
+}
+
+/* Botones */
+button {
+  background-color: #4CAF50;
+  color: #fff;
   border: none;
-  padding: 5px 10px;
+  padding: 8px 12px;
+  border-radius: 4px;
   cursor: pointer;
-  transition: background-color 0.3s;
+  transition: background-color 0.3s ease, transform 0.2s ease;
 }
 
-.carrito button:hover {
-  background-color: #e53935;
+button:hover {
+  background-color: #43A047;
+  transform: scale(1.02);
 }
 
-.carrito p {
-  font-weight: bold;
+button:active {
+  transform: scale(0.98);
 }
 
 button[disabled] {
@@ -89,12 +93,65 @@ button[disabled] {
   cursor: not-allowed;
 }
 
-.ventas {
-  margin: 20px;
+/* Carrito */
+.carrito {
+  background-color: #fff;
+  margin: 20px 0;
   padding: 20px;
-  background-color: #ffffff;
-  border-radius: 5px;
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  border-radius: 8px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+.carrito ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.carrito li {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 0;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.carrito li:last-child {
+  border-bottom: none;
+}
+
+.carrito p {
+  font-weight: bold;
+  margin-top: 15px;
+}
+
+/* Datos de la venta */
+.venta-datos {
+  margin: 20px 0;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.venta-datos label {
+  font-weight: bold;
+  margin-bottom: 5px;
+}
+
+.venta-datos input,
+.venta-datos select {
+  padding: 8px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+/* Historial de ventas */
+.ventas {
+  background-color: #fff;
+  margin: 20px 0;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
 }
 
 .ventas table {
@@ -103,22 +160,69 @@ button[disabled] {
   margin-top: 10px;
 }
 
-.ventas table, th, td {
-  border: 1px solid #ddd;
-}
-
 .ventas th, .ventas td {
+  border: 1px solid #eee;
   padding: 10px;
   text-align: center;
 }
 
 .ventas th {
   background-color: #4CAF50;
-  color: white;
+  color: #fff;
 }
 
+/* Modal para seleccionar ingredientes */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.modal-content {
+  background-color: #fff;
+  padding: 30px;
+  border-radius: 8px;
+  width: 90%;
+  max-width: 500px;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+}
+
+.ingredientes-list {
+  max-height: 300px;
+  overflow-y: auto;
+  margin: 15px 0;
+}
+
+.ingrediente-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 0;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.ingrediente-item:last-child {
+  border-bottom: none;
+}
+
+.modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 20px;
+}
+
+/* Errores */
 .error {
-  color: #f44336;
+  color: #e53935;
   text-align: center;
+  font-weight: bold;
   margin-bottom: 15px;
 }

@@ -18,7 +18,7 @@ const Empleados = () => {
     const apiUrl = process.env.REACT_APP_API_URL;
     const obtenerEmpleados = async () => {
         try {
-            const response = await axios.get(`${apiUrl}/api/empleados`);
+            const response = await axios.get(`${apiUrl}/api/empleados/empleados`);
             setEmpleados(response.data);
         } catch (error) {
             console.error('Error al obtener empleados:', error);
@@ -28,7 +28,7 @@ const Empleados = () => {
 
     const eliminarEmpleado = async (id) => {
         try {
-            await axios.delete(`${apiUrl}/api/empleados/${id}`);
+            await axios.delete(`${apiUrl}/api/empleados/empleados/${id}`);
             obtenerEmpleados(); // Refresh the list after deletion
         } catch (error) {
             console.error('Error al eliminar empleado:', error);
@@ -49,7 +49,7 @@ const Empleados = () => {
             if (empleadoSeleccionado) {
                 // Editar empleado
                 console.log('Datos para editar:', nuevoEmpleado);
-                await axios.put(`${apiUrl}/api/empleados/${empleadoSeleccionado.empleado_id}`, nuevoEmpleado);
+                await axios.put(`${apiUrl}/api/empleados/empleados/${empleadoSeleccionado.empleado_id}`, nuevoEmpleado);
                 setEmpleadoSeleccionado(null);
             } else {
                 // Generar usuario y contraseña antes de crear
@@ -64,7 +64,7 @@ const Empleados = () => {
                 };
     
                 console.log('Datos para crear:', empleadoConCredenciales);
-                await axios.post(`${apiUrl}/api/empleados`, empleadoConCredenciales);
+                await axios.post(`${apiUrl}/api/empleados/empleados`, empleadoConCredenciales);
     
                 setContraseñaGenerada(contraseñaGenerada);
             }

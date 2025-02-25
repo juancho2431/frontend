@@ -1,6 +1,6 @@
 import React from 'react';
 import IngredientesTable from '../components/inventory/IngredientesTable';
-import ArepasTable from '../components/inventory/ArepasTable';
+import ArepasTable from '../components/inventory/ProductosTable';
 import BebidasTable from '../components/inventory/BebidasTable';
 import '../styles/Inventario.css';
 
