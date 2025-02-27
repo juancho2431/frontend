@@ -28,8 +28,9 @@ const ImprimirFactura = () => {
     if (ventaId) {
       fetchVenta();
     }
-  }, [ventaId]);
+  }, [ventaId, apiUrl]);
 
+  // Función para imprimir la factura en PDF
   const handlePrint = () => {
     if (!venta || !venta.VentaDetalles || venta.VentaDetalles.length === 0) {
       console.error('No hay detalles de venta disponibles');
@@ -55,16 +56,16 @@ const ImprimirFactura = () => {
     doc.text('NIT: 1027520378-9', 23, yOffset);
     yOffset += 10;
   
-    // 3. Factura de venta con el ID al lado
+    // 3. Factura de venta con el ID
     doc.setFont('fantasia', 'bold');
     doc.text(`Factura de venta: ${venta.ventas_id}`, 5, yOffset);
     yOffset += 5;
   
     // 4. Fecha de venta
-   
     doc.text(`Fecha de venta: ${new Date(venta.fecha).toLocaleString()}`, 5, yOffset);
     yOffset += 5;
     doc.setFont('fantasia', 'normal');
+
     // 5. Cliente
     doc.text(`Cliente: ${venta.cliente || 'No especificado'}`, 5, yOffset);
     yOffset += 5;
@@ -75,18 +76,26 @@ const ImprimirFactura = () => {
   
     // Línea de separación
     doc.setFontSize(10);
-    doc.text('- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -', 10, yOffset);
+    doc.text(
+      '- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -',
+      10,
+      yOffset
+    );
     yOffset += 5;
     doc.setFontSize(12);
-    // 7. Cuadro de relación de lo que compró
+
+    // 7. Cabecera de la tabla de productos
     doc.setFont('fantasia', 'bold');
     doc.text('Producto              Cant.  Vlr. Und.  Total', 5, yOffset);
     doc.setFont('helvetica', 'normal');
     yOffset += 5;
     
+    // 8. Detalles de la venta
     venta.VentaDetalles.forEach((detalle) => {
-      const producto = detalle.tipo_producto === 'arepa' ? detalle.arepa : detalle.bebida;
-      const nombreProducto = producto ? producto.name : 'Producto desconocido';
+      // Cambio principal: si tipo_producto === 'producto' => detalle.producto
+      //                   si tipo_producto === 'bebida'   => detalle.bebida
+      const item = detalle.tipo_producto === 'producto' ? detalle.producto : detalle.bebida;
+      const nombreProducto = item ? item.name : 'Producto desconocido';
       const cantidad = detalle.cantidad;
       const precioUnitario = detalle.precio.toLocaleString('es-CO', { maximumFractionDigits: 0 });
       const totalProducto = (detalle.cantidad * detalle.precio).toLocaleString('es-CO', { maximumFractionDigits: 0 });
@@ -98,40 +107,57 @@ const ImprimirFactura = () => {
       yOffset += 5;
     });
     doc.setFontSize(10);
+
     // Línea de separación
-    doc.text('- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -', 10, yOffset);
+    doc.text(
+      '- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -',
+      10,
+      yOffset
+    );
     yOffset += 8;
   
-    // 8. Total de la venta
-    const totalFormateado = venta.total.toLocaleString('es-CO', { style: 'currency', currency: 'COP', maximumFractionDigits: 0 });
+    // 9. Total de la venta
+    const totalFormateado = venta.total.toLocaleString('es-CO', {
+      style: 'currency',
+      currency: 'COP',
+      maximumFractionDigits: 0,
+    });
     doc.setFont('fantasia', 'bold');
-    doc.setFontSize(20)
+    doc.setFontSize(20);
     doc.text(`Total: ${totalFormateado}`, 30, yOffset);
     yOffset += 10;
   
-    // 9. Gracias por su compra
+    // 10. Gracias por su compra
     doc.setFontSize(18);
     doc.text('¡¡Gracias por su compra!!', 5, yOffset);
     yOffset += 10;
   
-    // 10. Atendido por (vendedor)
+    // 11. Atendido por (vendedor)
     doc.setFontSize(13);
     doc.setFont('fantasia', 'normal');
-    doc.text(`Atendido por: ${venta.vendedor ? venta.vendedor.nombre + ' ' + venta.vendedor.apellido : 'No especificado'}`, 10, yOffset);
+    doc.text(
+      `Atendido por: ${
+        venta.vendedor
+          ? venta.vendedor.nombre + ' ' + venta.vendedor.apellido
+          : 'No especificado'
+      }`,
+      10,
+      yOffset
+    );
     yOffset += 10;
   
-    // 11. Teléfono de la empresa
+    // 12. Teléfono de la empresa
     doc.text('Teléfono: 3229614209', 10, yOffset);
     yOffset += 10;
   
-    // 12. Régimen
+    // 13. Régimen
     doc.text('Régimen: No responsable de IVA', 10, yOffset);
     yOffset += 20;
   
-    // 13. Información adicional
-    doc.setFont('courier' , 'bold')
+    // 14. Información adicional
+    doc.setFont('courier', 'bold');
     doc.text('Coding Web Design', 15, yOffset);
-    doc.text('Tel: 3223165793', 15, yOffset += 5);
+    doc.text('Tel: 3223165793', 15, (yOffset += 5));
     
     yOffset += 20;
   
@@ -148,7 +174,6 @@ const ImprimirFactura = () => {
       iframe.contentWindow.print();
     };
   };
-  
 
   return (
     <div>
@@ -168,13 +193,15 @@ const ImprimirFactura = () => {
             </thead>
             <tbody>
               {venta.VentaDetalles.map((detalle) => {
-                const producto = detalle.tipo_producto === 'arepa' ? detalle.arepa : detalle.bebida;
-                const nombreProducto = producto ? producto.name : 'Producto desconocido';
+                // Ajuste en la tabla también
+                const item = detalle.tipo_producto === 'producto' ? detalle.producto : detalle.bebida;
+                const nombreProducto = item ? item.name : 'Producto desconocido';
                 const cantidad = detalle.cantidad;
                 const precioUnitario = detalle.precio.toLocaleString('es-CO', { maximumFractionDigits: 0 });
                 const totalProducto = (detalle.cantidad * detalle.precio).toLocaleString('es-CO', { maximumFractionDigits: 0 });
+
                 return (
-                  <tr key={detalle.id}>
+                  <tr key={detalle.venta_detalle_id}>
                     <td>{nombreProducto}</td>
                     <td>{cantidad}</td>
                     <td>$ {precioUnitario}</td>
@@ -184,8 +211,15 @@ const ImprimirFactura = () => {
               })}
             </tbody>
           </table>
-          <p><strong>Cliente:</strong> {venta.cliente || 'No especificado'}</p>
-          <p><strong>Atendido por:</strong> {venta.vendedor ? `${venta.vendedor.nombre} ${venta.vendedor.apellido}` : 'No especificado'}</p>
+          <p>
+            <strong>Cliente:</strong> {venta.cliente || 'No especificado'}
+          </p>
+          <p>
+            <strong>Atendido por:</strong>{' '}
+            {venta.vendedor
+              ? `${venta.vendedor.nombre} ${venta.vendedor.apellido}`
+              : 'No especificado'}
+          </p>
           <button onClick={handlePrint}>Imprimir Factura</button>
         </div>
       )}

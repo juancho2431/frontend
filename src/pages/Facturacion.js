@@ -6,9 +6,9 @@ import '../styles/Facturacion.css';
 const Facturacion = () => {
   // Estados generales
   const [ventas, setVentas] = useState([]);
-  const [productos, setProductos] = useState([]); // Productos (antes arepas)
+  const [productos, setProductos] = useState([]); // Productos con sus datos originales
   const [bebidas, setBebidas] = useState([]);
-  const [ingredientes, setIngredientes] = useState([]); // Inventario completo de ingredientes
+  const [ingredientes, setIngredientes] = useState([]);
   const [carrito, setCarrito] = useState([]);
   const [total, setTotal] = useState(0);
   const [error, setError] = useState(null);
@@ -19,12 +19,12 @@ const Facturacion = () => {
 
   const apiUrl = process.env.REACT_APP_API_URL;
 
-  // Estado para el modal de selección de ingredientes
+  // Estado para el modal de ingredientes
   const [showIngredientsModal, setShowIngredientsModal] = useState(false);
   const [currentProduct, setCurrentProduct] = useState(null);
-  const [selectedIngredients, setSelectedIngredients] = useState([]); // Ingredientes seleccionados para el producto
+  const [selectedIngredients, setSelectedIngredients] = useState([]);
 
-  // Función para formatear precio
+  // Función para formatear el precio
   const formatPrice = (price) => price.toLocaleString('es-CO');
 
   // ----- FETCHS -----
@@ -89,20 +89,20 @@ const Facturacion = () => {
 
   // ----- Modal de Ingredientes -----
 
-  // Abre el modal para seleccionar ingredientes para un producto
   const handleOpenIngredientsModal = (producto) => {
     setCurrentProduct(producto);
-    // Inicializamos la lista de ingredientes para el modal con la lista global
-    const initialSelection = ingredientes.map((ing) => ({
+  
+    // Obtener los ingredientes específicos del producto
+    const ingredientesProducto = producto.Ingredientes.map((ing) => ({
       ...ing,
-      checked: false,
-      amount: 0,
+      checked: true, // Lo marcamos por defecto como seleccionado
+      amount: ing.ProductoIngrediente.amount || 1, // Usamos la cantidad del producto
     }));
-    setSelectedIngredients(initialSelection);
+  
+    setSelectedIngredients(ingredientesProducto);
     setShowIngredientsModal(true);
   };
-
-  // Cambia el estado del checkbox de un ingrediente
+  
   const handleToggleIngredient = (ingredientId) => {
     setSelectedIngredients((prev) =>
       prev.map((ing) =>
@@ -111,36 +111,57 @@ const Facturacion = () => {
     );
   };
 
-  // Cambia la cantidad de un ingrediente seleccionado
   const handleChangeAmount = (ingredientId, value) => {
     setSelectedIngredients((prev) =>
       prev.map((ing) =>
-        ing.ingredient_id === ingredientId ? { ...ing, amount: parseFloat(value) || 0 } : ing
+        ing.ingredient_id === ingredientId
+          ? { ...ing, amount: parseFloat(value) || 1 } // Mantiene un valor válido
+          : ing
       )
     );
   };
-
-  // Confirma la selección de ingredientes para el producto actual y cierra el modal
+  
   const handleConfirmIngredients = () => {
     if (!currentProduct) return;
     const ingredientesSeleccionados = selectedIngredients
       .filter((ing) => ing.checked && ing.amount > 0)
       .map(({ ingredient_id, name, amount }) => ({ ingredient_id, name, amount }));
-    // Agrega el producto al carrito con los ingredientes seleccionados
-    handleAddToCarrito({
+    // Se crea un objeto con la propiedad "id" unificada a partir de producto_id
+    const productoConIngredientes = {
       ...currentProduct,
-      type: 'producto',
+      type: "producto",
+      // Dos columnas approach: 'producto_id' no se mezcla con 'bebida_id'
+      producto_id: currentProduct.producto_id,
+      bebida_id: null,
       ingredientesSeleccionados,
-    });
+    };
+    handleAddToCarrito(productoConIngredientes);
     setShowIngredientsModal(false);
   };
 
   // ----- Carrito -----
 
-  const handleAddToCarrito = (item) => {
-    setCarrito((prev) => [...prev, item]);
-    setTotal((prev) => prev + item.price);
-  };
+// En tu Facturacion.js (o donde manejes el carrito):
+const handleAddToCarrito = (item) => {
+  // Verifica si el item viene con algo como item.type === 'producto' o 'bebida'
+  let newItem = { ...item };
+
+  // Ajustar para el modelo de 2 columnas:
+  if (newItem.type === 'producto') {
+    // Aseguramos que producto_id tenga valor y bebida_id sea null
+    newItem.producto_id = newItem.producto_id ?? newItem.id; 
+    // O si tu item ya tiene .producto_id, úsalo
+    newItem.bebida_id = null;
+  } else if (newItem.type === 'bebida') {
+    // Aseguramos que bebida_id tenga valor y producto_id sea null
+    newItem.bebida_id = newItem.bebida_id ?? newItem.id; 
+    newItem.producto_id = null;
+  }
+
+  setCarrito((prev) => [...prev, newItem]);
+  setTotal((prev) => prev + newItem.price);
+};
+
 
   const handleRemoveFromCarrito = (index) => {
     const itemToRemove = carrito[index];
@@ -159,34 +180,39 @@ const Facturacion = () => {
       setError('Por favor, complete todos los campos');
       return;
     }
+    // Se construye la data de la venta usando la propiedad "id" unificada
     const ventaData = {
       cliente,
       metodo_pago: metodoPago,
       vendedor_id: empleadoSeleccionado,
       fecha: new Date().toISOString(),
       total,
-      detalles: carrito.map((item) => ({
-        tipo_producto: item.type, // 'producto' o 'bebida'
-        producto_id: item.producto_id || item.bebida_id,
-        cantidad: 1,
-        precio: item.price,
-        // Incluye los ingredientes seleccionados (si existen)
-        ingredientes: item.ingredientesSeleccionados || [],
-      })),
+      detalles: carrito.map((item) => {
+        // Si item.type = 'producto', 'producto_id' no es null, 'bebida_id' es null
+        // Si item.type = 'bebida', 'bebida_id' no es null, 'producto_id' es null
+        return {
+          tipo_producto: item.type, // 'producto' o 'bebida'
+          producto_id: item.type === "producto" ? item.producto_id : null,
+          bebida_id: item.type === "bebida" ? item.bebida_id : null,
+          cantidad: 1,
+          precio: item.price,
+          // Si es producto, enviamos los ingredientes (opcional)
+          ingredientes: item.type === "producto" ? item.ingredientesSeleccionados || [] : [],
+        };
+      }),
     };
 
     try {
       console.log('Datos de la venta:', JSON.stringify(ventaData, null, 2));
       await axios.post(`${apiUrl}/api/ventas`, ventaData);
-      // Al confirmar la venta, se debería descontar la cantidad de cada ingrediente en el backend.
-      // Luego, refrescamos los datos.
+      // Reiniciamos el carrito y refrescamos datos
       setCarrito([]);
       setTotal(0);
       setCliente('');
       setMetodoPago('Efectivo');
       setEmpleadoSeleccionado('');
       fetchVentas();
-      fetchIngredientes(); // Refrescar inventario de ingredientes
+      fetchIngredientes();
     } catch (err) {
       setError('Error al realizar la venta');
       console.error(err);
@@ -204,7 +230,9 @@ const Facturacion = () => {
           <h2>Productos</h2>
           {productos.map((producto) => (
             <div key={producto.producto_id} className="item">
-              <span>{producto.name} - ${formatPrice(producto.price)}</span>
+              <span>
+                {producto.name} - ${formatPrice(producto.price)}
+              </span>
               <button onClick={() => handleOpenIngredientsModal(producto)}>
                 Seleccionar Ingredientes
               </button>
@@ -216,8 +244,14 @@ const Facturacion = () => {
           <h2>Bebidas</h2>
           {bebidas.map((bebida) => (
             <div key={bebida.bebida_id} className="item">
-              <span>{bebida.name} - ${formatPrice(bebida.price)}</span>
-              <button onClick={() => handleAddToCarrito({ ...bebida, type: 'bebida' })}>
+              <span>
+                {bebida.name} - ${formatPrice(bebida.price)}
+              </span>
+              <button
+                onClick={() =>
+                  handleAddToCarrito({ ...bebida, type: 'bebida', id: bebida.bebida_id })
+                }
+              >
                 Agregar
               </button>
             </div>
@@ -235,15 +269,17 @@ const Facturacion = () => {
             {carrito.map((item, index) => (
               <li key={index}>
                 <strong>{item.name}</strong> - ${formatPrice(item.price)}
-                {item.ingredientesSeleccionados && item.ingredientesSeleccionados.length > 0 && (
-                  <ul>
-                    {item.ingredientesSeleccionados.map((ing, i) => (
-                      <li key={i}>
-                        {ing.name} x {ing.amount}
-                      </li>
-                    ))}
-                  </ul>
-                )}
+                {item.type === 'producto' &&
+                  item.ingredientesSeleccionados &&
+                  item.ingredientesSeleccionados.length > 0 && (
+                    <ul>
+                      {item.ingredientesSeleccionados.map((ing, i) => (
+                        <li key={i}>
+                          {ing.name} x {ing.amount}
+                        </li>
+                      ))}
+                    </ul>
+                  )}
                 <button onClick={() => handleRemoveFromCarrito(index)}>Eliminar</button>
               </li>
             ))}
@@ -319,29 +355,28 @@ const Facturacion = () => {
             <h2>Seleccionar Ingredientes</h2>
             <p>Producto: {currentProduct?.name}</p>
             <div className="ingredientes-list">
-              {selectedIngredients.map((ing) => (
-                <div key={ing.ingredient_id} className="ingrediente-item">
-                  <label>
-                    <input
-                      type="checkbox"
-                      checked={ing.checked}
-                      onChange={() => handleToggleIngredient(ing.ingredient_id)}
-                    />
-                    {ing.name}
-                  </label>
-                  {ing.checked && (
-                    <input
-                      type="number"
-                      min="0"
-                      step="0.1"
-                      value={ing.amount}
-                      onChange={(e) => handleChangeAmount(ing.ingredient_id, e.target.value)}
-                      placeholder="Cantidad"
-                    />
-                  )}
-                </div>
-              ))}
-            </div>
+  {selectedIngredients.map((ing) => (
+    <div key={ing.ingredient_id} className="ingrediente-item">
+      <label>
+        <input
+          type="checkbox"
+          checked={ing.checked}
+          onChange={() => handleToggleIngredient(ing.ingredient_id)}
+        />
+        {ing.name}
+      </label>
+      <input
+        type="number"
+        min="1"
+        step="1"
+        value={ing.amount} // Se usa el valor de ProductoIngrediente.amount
+        onChange={(e) => handleChangeAmount(ing.ingredient_id, e.target.value)}
+        placeholder="Cantidad"
+      />
+    </div>
+  ))}
+</div>
+
             <div className="modal-actions">
               <button onClick={handleConfirmIngredients}>Confirmar</button>
               <button onClick={() => setShowIngredientsModal(false)}>Cerrar</button>
